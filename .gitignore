@@ -1,0 +1,12 @@
+node_modules
+.env
+cache
+artifacts
+coverage
+coverage.json
+*.log
+.cursorignore
+dist
+build
+.git
+/package-lock.json

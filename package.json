@@ -1,0 +1,42 @@
+{
+  "name": "atx-agent-sdk",
+  "version": "0.1.0",
+  "description": "TypeScript SDK for ATX token on-chain interactions (BSC / PancakeSwap V3)",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "prepare": "npm run build"
+  },
+  "dependencies": {
+    "viem": "^2.31.3"
+  },
+  "devDependencies": {
+    "@types/node": "^24.5.2",
+    "tsup": "^8.5.0",
+    "typescript": "^5.8.3"
+  },
+  "keywords": [
+    "atx",
+    "bsc",
+    "pancakeswap",
+    "v3",
+    "sdk",
+    "agent"
+  ],
+  "license": "MIT"
+}
