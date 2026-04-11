@@ -197,7 +197,7 @@ interface TxResult { txHash: `0x${string}`; }
 |---|---|---|
 | `DEFAULT_RPC_URL` | `https://bsc-rpc.publicnode.com` | Public BSC RPC |
 | `DEFAULT_POOL_FEE` | `2500` | 0.25% fee tier |
-| `DEFAULT_SLIPPAGE_BPS` | `10` | 0.1% default slippage |
+| `DEFAULT_SLIPPAGE_BPS` | `300` | 3% default slippage |
 | `DEADLINE_SECONDS` | `1200` | Transaction deadline 20 minutes |
 | `MAX_UINT128` | `2^128 - 1` | Used in collect to claim all fees |
 

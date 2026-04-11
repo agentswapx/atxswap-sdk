@@ -15,7 +15,7 @@ export const DEFAULT_CONTRACTS = {
 
 export const DEFAULT_POOL_FEE = 2500;
 
-export const DEFAULT_SLIPPAGE_BPS = 10; // 0.1%
+export const DEFAULT_SLIPPAGE_BPS = 300; // 3%
 
 export const MAX_UINT128 = (1n << 128n) - 1n;
 

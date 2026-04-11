@@ -197,7 +197,7 @@ interface TxResult { txHash: `0x${string}`; }
 |---|---|---|
 | `DEFAULT_RPC_URL` | `https://bsc-rpc.publicnode.com` | 公共 BSC RPC |
 | `DEFAULT_POOL_FEE` | `2500` | 0.25% 手续费档位 |
-| `DEFAULT_SLIPPAGE_BPS` | `10` | 0.1% 默认滑点 |
+| `DEFAULT_SLIPPAGE_BPS` | `300` | 3% 默认滑点 |
 | `DEADLINE_SECONDS` | `1200` | 交易 deadline 20 分钟 |
 | `MAX_UINT128` | `2^128 - 1` | collect 时用于取回全部手续费 |
 
