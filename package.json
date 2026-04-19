@@ -1,7 +1,7 @@
 {
   "name": "atxswap-sdk",
-  "version": "0.1.0",
-  "description": "TypeScript SDK for ATX token on-chain interactions (BSC / PancakeSwap V3)",
+  "version": "0.0.1",
+  "description": "TypeScript SDK for ATX token on-chain interactions (BSC / PancakeSwap V3) — wallet management, price/balance queries, swaps, concentrated liquidity, and transfers.",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -14,13 +14,17 @@
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md",
+    "README.zh.md",
+    "LICENSE"
   ],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
     "typecheck": "tsc --noEmit",
-    "prepare": "npm run build"
+    "prepare": "npm run build",
+    "prepublishOnly": "npm run build"
   },
   "dependencies": {
     "viem": "^2.31.3"
@@ -32,11 +36,33 @@
   },
   "keywords": [
     "atx",
+    "atxswap",
     "bsc",
+    "binance-smart-chain",
     "pancakeswap",
-    "v3",
+    "pancakeswap-v3",
+    "defi",
+    "viem",
+    "wallet",
+    "swap",
+    "liquidity",
     "sdk",
     "agent"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "author": "agentswapx",
+  "homepage": "https://github.com/agentswapx/atxswap-sdk#readme",
+  "bugs": {
+    "url": "https://github.com/agentswapx/atxswap-sdk/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/agentswapx/atxswap-sdk.git"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
 }
