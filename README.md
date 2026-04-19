@@ -11,23 +11,26 @@ TypeScript SDK for ATX token on-chain interactions on BSC, including wallet mana
 - **tsup** — bundler, outputs both ESM (`index.js`) and CJS (`index.cjs`)
 - **Node.js 18+** — runtime requirement (`node:crypto` / `node:fs`)
 
-## Quick Start
+## Install
 
 ```bash
-# Clone the repository
+npm install atxswap-sdk
+```
+
+```typescript
+import { AtxClient } from "atxswap-sdk";
+
+const client = new AtxClient({ rpcUrl: process.env.BSC_RPC_URL });
+const price = await client.query.getPrice();
+```
+
+Need it locally for development?
+
+```bash
 git clone https://github.com/agentswapx/atxswap-sdk.git
 cd atxswap-sdk
-
-# Install dependencies
-npm install
-
-# Build
-npm run build
-
-# Dev mode (watch)
-npm run dev
-
-# Type check
+npm install        # builds dist via prepare hook
+npm run dev        # watch mode
 npm run typecheck
 ```
 
