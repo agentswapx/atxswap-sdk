@@ -1,4 +1,4 @@
-# atx-agent-sdk
+# atxswap-sdk
 
 TypeScript SDK for ATX token on-chain interactions on BSC, including wallet management, price queries, token swaps (PancakeSwap V3), concentrated liquidity management, and transfers.
 
@@ -15,8 +15,8 @@ TypeScript SDK for ATX token on-chain interactions on BSC, including wallet mana
 
 ```bash
 # Clone the repository
-git clone https://github.com/agentswapx/atx-agent-sdk.git
-cd atx-agent-sdk
+git clone https://github.com/agentswapx/atxswap-sdk.git
+cd atxswap-sdk
 
 # Install dependencies
 npm install
@@ -110,8 +110,8 @@ The SDK includes a built-in cross-platform secure password storage layer — **e
 
 | File | Default path |
 |---|---|
-| `master.key` | `~/.config/atx-agent/master.key` |
-| `secrets.json` | `~/.config/atx-agent/secrets.json` |
+| `master.key` | `~/.config/atxswap/master.key` |
+| `secrets.json` | `~/.config/atxswap/secrets.json` |
 
 These defaults are fixed and cannot be overridden via environment variables.
 
@@ -206,7 +206,7 @@ interface TxResult { txHash: `0x${string}`; }
 ### Query Price and Balance
 
 ```typescript
-import { AtxClient } from "atx-agent-sdk";
+import { AtxClient } from "atxswap-sdk";
 
 const client = new AtxClient();
 
@@ -220,7 +220,7 @@ console.log(`BNB: ${bal.bnb}, ATX: ${bal.atx}, USDT: ${bal.usdt}`);
 ### Create Wallet and Swap
 
 ```typescript
-import { AtxClient, parseUnits } from "atx-agent-sdk";
+import { AtxClient, parseUnits } from "atxswap-sdk";
 
 const client = await new AtxClient().ready();
 
@@ -238,7 +238,7 @@ console.log(`TX: ${result.txHash}`);
 ### Add Liquidity
 
 ```typescript
-import { AtxClient, parseEther, parseUnits } from "atx-agent-sdk";
+import { AtxClient, parseEther, parseUnits } from "atxswap-sdk";
 
 const client = await new AtxClient().ready();
 const wallet = await client.wallet.load("0x...");
@@ -255,7 +255,7 @@ console.log(`TX: ${result.txHash}`);
 ### Transfer
 
 ```typescript
-import { AtxClient, parseEther } from "atx-agent-sdk";
+import { AtxClient, parseEther } from "atxswap-sdk";
 
 const client = await new AtxClient().ready();
 const wallet = await client.wallet.load("0x...");

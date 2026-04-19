@@ -1,5 +1,5 @@
 {
-  "name": "atx-agent-sdk",
+  "name": "atxswap-sdk",
   "version": "0.1.0",
   "description": "TypeScript SDK for ATX token on-chain interactions (BSC / PancakeSwap V3)",
   "type": "module",

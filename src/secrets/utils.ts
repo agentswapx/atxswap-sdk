@@ -3,14 +3,14 @@ import { join } from "node:path";
 import { execFileSync } from "node:child_process";
 import type { SecretStoreType } from "./types.js";
 
-const SERVICE_NAME = "atx-agent-sdk";
+const SERVICE_NAME = "atxswap-sdk";
 
 export function getServiceName(): string {
   return SERVICE_NAME;
 }
 
 export function getDefaultConfigDir(): string {
-  return join(homedir(), ".config", "atx-agent");
+  return join(homedir(), ".config", "atxswap");
 }
 
 export function getDefaultMasterKeyPath(): string {
