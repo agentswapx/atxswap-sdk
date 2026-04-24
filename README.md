@@ -91,7 +91,7 @@ Access modules via `client.wallet` / `client.query` / `client.swap` / `client.li
 
 | Module | Class | R/W | Responsibility |
 |---|---|---|---|
-| `wallet` | `WalletManager` | Local R/W | Create / import / list / load / export wallets (keystore V3 encrypted) |
+| `wallet` | `WalletManager` | Local R/W | Create / list / load the single skill wallet, plus `exportKeystore()` to read the encrypted keystore V3 JSON (importing or exporting a raw private key is not supported) |
 | `query` | `QueryService` | On-chain read | Price, balance, quote, LP position, token info queries |
 | `swap` | `SwapService` | On-chain write | Buy/sell ATX via V3 SwapRouter |
 | `liquidity` | `LiquidityService` | On-chain write | Add/remove liquidity, collect fees, burn empty positions |
@@ -130,10 +130,10 @@ These defaults are fixed and cannot be overridden via environment variables.
 
 #### Behavior
 
-- `create()` / `importPrivateKey()` auto-saves the password on success (disable with `options.savePassword = false`)
+- `create()` auto-saves the password on success (disable with `options.savePassword = false`)
 - `load(address)` without password auto-reads from SecretStore
 - `load(address, password)` with password uses it directly and syncs to storage
-- `exportPrivateKey(address)` also supports auto-password retrieval
+- `exportKeystore(address)` returns the on-disk keystore V3 JSON (already password-encrypted); the SDK never exposes the unencrypted private key
 
 #### Additional Methods
 
@@ -286,7 +286,7 @@ await client.transfer.sendAtx(wallet, "0xRecipient", parseEther("100"));
 The SDK exports via `index.ts`:
 
 - **Classes**: `AtxClient`, `WalletManager`, `QueryService`, `SwapService`, `LiquidityService`, `TransferService`
-- **Types**: `ContractAddresses`, `AtxClientConfig`, `SecretStore`, `WalletCreateOptions`, `UnlockedWallet`, `KeystoreInfo`, `PriceResult`, `BalanceResult`, `QuoteResult`, `PositionData`, `TokenInfo`, `SwapResult`, `LiquidityAddOptions`, `TxResult`
+- **Types**: `ContractAddresses`, `AtxClientConfig`, `SecretStore`, `WalletCreateOptions`, `UnlockedWallet`, `KeystoreInfo`, `KeystoreFile`, `PriceResult`, `BalanceResult`, `QuoteResult`, `PositionData`, `TokenInfo`, `SwapResult`, `LiquidityAddOptions`, `TxResult`
 - **Constants**: `BSC_CHAIN_ID`, `DEFAULT_RPC_URLS`, `DEFAULT_RPC_URL`, `DEFAULT_CONTRACTS`, `DEFAULT_POOL_FEE`, `DEFAULT_SLIPPAGE_BPS`, `MAX_UINT128`, `DEADLINE_SECONDS`
 - **ABI**: `erc20Abi`, `swapRouterAbi`, `quoterAbi`, `poolAbi`, `npmAbi`
 - **viem re-exports**: `parseEther`, `parseUnits`, `formatEther`, `formatUnits`

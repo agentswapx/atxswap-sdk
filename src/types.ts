@@ -34,6 +34,20 @@ export interface KeystoreInfo {
   filename: string;
 }
 
+export interface KeystoreFile {
+  version: 3;
+  address: string;
+  name?: string;
+  crypto: {
+    cipher: string;
+    cipherparams: { iv: string };
+    ciphertext: string;
+    kdf: string;
+    kdfparams: { dklen: number; n: number; r: number; p: number; salt: string };
+    mac: string;
+  };
+}
+
 export interface PriceResult {
   atxPerUsdt: number;
   usdtPerAtx: number;

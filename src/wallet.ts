@@ -9,22 +9,15 @@ import { privateKeyToAccount, generatePrivateKey } from "viem/accounts";
 import { readFileSync, writeFileSync, readdirSync, mkdirSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import { createCipheriv, createDecipheriv, randomBytes, scryptSync, createHash } from "node:crypto";
-import type { UnlockedWallet, KeystoreInfo, WalletCreateOptions } from "./types.js";
+import type {
+  UnlockedWallet,
+  KeystoreInfo,
+  WalletCreateOptions,
+  KeystoreFile,
+} from "./types.js";
 import type { SecretStore } from "./secrets/types.js";
 
-interface KeystoreV3 {
-  version: 3;
-  address: string;
-  name?: string;
-  crypto: {
-    cipher: string;
-    cipherparams: { iv: string };
-    ciphertext: string;
-    kdf: string;
-    kdfparams: { dklen: number; n: number; r: number; p: number; salt: string };
-    mac: string;
-  };
-}
+type KeystoreV3 = KeystoreFile;
 
 export class WalletManager {
   private readonly keystorePath: string;
@@ -54,17 +47,8 @@ export class WalletManager {
     name?: string,
     options?: WalletCreateOptions,
   ): Promise<{ address: Address; keystoreFile: string }> {
-    const privateKey = generatePrivateKey();
-    return this.importPrivateKey(privateKey, password, name, options);
-  }
-
-  async importPrivateKey(
-    privateKey: `0x${string}`,
-    password: string,
-    name?: string,
-    options?: WalletCreateOptions,
-  ): Promise<{ address: Address; keystoreFile: string }> {
     this.ensureDir();
+    const privateKey = generatePrivateKey();
     const account = privateKeyToAccount(privateKey);
     const keystore = encryptKeystore(privateKey, password, name);
     const filename = `${account.address.toLowerCase()}.json`;
@@ -129,25 +113,14 @@ export class WalletManager {
     return this.load(address);
   }
 
-  async exportPrivateKey(address: Address, password?: string): Promise<`0x${string}`> {
+  exportKeystore(address: Address): { keystore: KeystoreFile; keystoreFile: string } {
     const filename = `${address.toLowerCase()}.json`;
     const filepath = join(this.keystorePath, filename);
     if (!existsSync(filepath)) {
       throw new Error(`Keystore file not found for address ${address}`);
     }
-
-    let pwd = password;
-    if (!pwd && this.secretStore) {
-      pwd = (await this.secretStore.get(address)) ?? undefined;
-    }
-    if (!pwd) {
-      throw new Error(
-        "Password required: provide a password or save one first via savePassword()",
-      );
-    }
-
-    const raw = JSON.parse(readFileSync(filepath, "utf-8")) as KeystoreV3;
-    return decryptKeystore(raw, pwd);
+    const keystore = JSON.parse(readFileSync(filepath, "utf-8")) as KeystoreFile;
+    return { keystore, keystoreFile: filepath };
   }
 
   async savePassword(address: Address, password: string): Promise<void> {
