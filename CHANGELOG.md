@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.0.5
+
+- Updated `DEFAULT_CONTRACTS` to point at the production ATX token and ATX/USDT
+  pool addresses on BSC mainnet:
+  - `atx`: `0x82dbfD98AE6741C8506640CE235c6d95570EA638`
+  - `pool`: `0x157003c4a71697a79f300419eaee271a5f21acaa`
+  Consumers that relied on the old defaults should override them via
+  `AtxClient` config or upgrade to pick up the new defaults.
+- Version `0.0.4` was intentionally skipped to keep parity with the
+  `atxswap` skill release line.
+
 ## 0.0.3
 
 - **Breaking**: removed `WalletManager.importPrivateKey()`. The SDK no longer
