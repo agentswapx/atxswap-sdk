@@ -24,7 +24,7 @@ const client = new AtxClient({ rpcUrl: process.env.BSC_RPC_URL });
 const price = await client.query.getPrice();
 ```
 
-> SDK 内置了 8 个 BSC RPC 端点（Infura + 7 个 BNB Chain 公共节点）作为 fallback 列表，因此 `new AtxClient()` 不传任何配置也能直接使用。`rpcUrls` 用法见 [`AtxClient`](#atxclient--%E5%85%A5%E5%8F%A3%E7%B1%BB)。
+> SDK 内置了 8 个 BSC 公共 RPC 端点作为 fallback 列表，因此 `new AtxClient()` 不传任何配置也能直接使用。`rpcUrls` 用法见 [`AtxClient`](#atxclient--%E5%85%A5%E5%8F%A3%E7%B1%BB)。
 
 本地开发模式：
 
@@ -69,7 +69,7 @@ const client = new AtxClient({
   // 方式 A：传入有序 RPC 列表，viem 会按顺序回退
   rpcUrls: [
     "https://my-private-rpc.example.com",
-    "https://bsc-mainnet.infura.io",
+    "https://bsc-rpc.publicnode.com",
   ],
   // 方式 B（旧用法，单个端点）：rpcUrl: "https://..."
   // 两者都不传时使用内置 DEFAULT_RPC_URLS。
@@ -208,7 +208,7 @@ interface TxResult { txHash: `0x${string}`; }
 
 | 常量 | 值 | 说明 |
 |---|---|---|
-| `DEFAULT_RPC_URLS` | `[infura, bsc-dataseed*.bnbchain.org x 6, binance.nodereal.io]` | 内置的 BSC RPC fallback 列表（共 8 个） |
+| `DEFAULT_RPC_URLS` | `[bsc-rpc.publicnode.com, bsc-dataseed*.bnbchain.org x 6, binance.nodereal.io]` | 内置的 BSC RPC fallback 列表（共 8 个） |
 | `DEFAULT_RPC_URL` | `DEFAULT_RPC_URLS[0]` | fallback 列表首项（保留用于向后兼容） |
 | `DEFAULT_POOL_FEE` | `2500` | 0.25% 手续费档位 |
 | `DEFAULT_SLIPPAGE_BPS` | `300` | 3% 默认滑点 |
