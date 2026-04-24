@@ -2,7 +2,18 @@ import type { Address } from "viem";
 
 export const BSC_CHAIN_ID = 56;
 
-export const DEFAULT_RPC_URL = "https://bsc-rpc.publicnode.com";
+export const DEFAULT_RPC_URLS: readonly string[] = [
+  "https://bsc-mainnet.infura.io",
+  "https://bsc-dataseed.bnbchain.org",
+  "https://bsc-dataseed1.bnbchain.org",
+  "https://bsc-dataseed2.bnbchain.org",
+  "https://bsc-dataseed3.bnbchain.org",
+  "https://bsc-dataseed4.bnbchain.org",
+  "https://bsc-dataseed-public.bnbchain.org",
+  "https://binance.nodereal.io",
+];
+
+export const DEFAULT_RPC_URL = DEFAULT_RPC_URLS[0];
 
 export const DEFAULT_CONTRACTS = {
   atx: "0xC834d7D575A88c2C81DC1216A693B77aC6483Fca" as Address,

@@ -1,7 +1,7 @@
-import { createPublicClient, http, type PublicClient, type Chain } from "viem";
+import { createPublicClient, fallback, http, type PublicClient, type Chain } from "viem";
 import { bsc } from "viem/chains";
 import {
-  DEFAULT_RPC_URL,
+  DEFAULT_RPC_URLS,
   DEFAULT_CONTRACTS,
   DEFAULT_POOL_FEE,
 } from "./constants.js";
@@ -28,17 +28,17 @@ export class AtxClient {
   private _secretStoreReady: Promise<void>;
 
   constructor(config: AtxClientConfig = {}) {
-    const rpcUrl = config.rpcUrl ?? DEFAULT_RPC_URL;
+    const rpcUrls = resolveRpcUrls(config);
     this.chain = bsc;
     this.poolFee = config.poolFee ?? DEFAULT_POOL_FEE;
     this.contracts = { ...DEFAULT_CONTRACTS, ...config.contracts };
 
     this.publicClient = createPublicClient({
       chain: this.chain,
-      transport: http(rpcUrl),
+      transport: fallback(rpcUrls.map((url) => http(url))),
     });
 
-    this.wallet = new WalletManager(config.keystorePath ?? "./keystore", this.chain, rpcUrl);
+    this.wallet = new WalletManager(config.keystorePath ?? "./keystore", this.chain, rpcUrls);
     this.query = new QueryService(this.publicClient, this.contracts, this.poolFee);
     this.swap = new SwapService(this.publicClient, this.contracts, this.poolFee);
     this.liquidity = new LiquidityService(this.publicClient, this.contracts, this.poolFee);
@@ -53,4 +53,14 @@ export class AtxClient {
     await this._secretStoreReady;
     return this;
   }
+}
+
+function resolveRpcUrls(config: AtxClientConfig): string[] {
+  if (config.rpcUrls && config.rpcUrls.length > 0) {
+    return [...config.rpcUrls];
+  }
+  if (config.rpcUrl) {
+    return [config.rpcUrl];
+  }
+  return [...DEFAULT_RPC_URLS];
 }

@@ -24,6 +24,8 @@ const client = new AtxClient({ rpcUrl: process.env.BSC_RPC_URL });
 const price = await client.query.getPrice();
 ```
 
+> SDK 内置了 8 个 BSC RPC 端点（Infura + 7 个 BNB Chain 公共节点）作为 fallback 列表，因此 `new AtxClient()` 不传任何配置也能直接使用。`rpcUrls` 用法见 [`AtxClient`](#atxclient--%E5%85%A5%E5%8F%A3%E7%B1%BB)。
+
 本地开发模式：
 
 ```bash
@@ -64,7 +66,13 @@ src/
 
 ```typescript
 const client = new AtxClient({
-  rpcUrl: "https://bsc-rpc.publicnode.com",  // 可选，有默认值
+  // 方式 A：传入有序 RPC 列表，viem 会按顺序回退
+  rpcUrls: [
+    "https://my-private-rpc.example.com",
+    "https://bsc-mainnet.infura.io",
+  ],
+  // 方式 B（旧用法，单个端点）：rpcUrl: "https://..."
+  // 两者都不传时使用内置 DEFAULT_RPC_URLS。
   keystorePath: "./keystore",                 // 可选，默认 ./keystore
   poolFee: 2500,                              // 可选，默认 2500 (0.25%)
   contracts: {                                // 可选，部分覆盖默认地址
@@ -74,6 +82,8 @@ const client = new AtxClient({
 });
 await client.ready(); // 等待 SecretStore 初始化完成
 ```
+
+`rpcUrls` 优先级高于 `rpcUrl`。`publicClient`（读）和 `wallet.load()` 返回的 `walletClient`（写）共用同一份基于 viem `fallback` 构造的 transport。
 
 通过 `client.wallet` / `client.query` / `client.swap` / `client.liquidity` / `client.transfer` 访问各模块。
 
@@ -198,7 +208,8 @@ interface TxResult { txHash: `0x${string}`; }
 
 | 常量 | 值 | 说明 |
 |---|---|---|
-| `DEFAULT_RPC_URL` | `https://bsc-rpc.publicnode.com` | 公共 BSC RPC |
+| `DEFAULT_RPC_URLS` | `[infura, bsc-dataseed*.bnbchain.org x 6, binance.nodereal.io]` | 内置的 BSC RPC fallback 列表（共 8 个） |
+| `DEFAULT_RPC_URL` | `DEFAULT_RPC_URLS[0]` | fallback 列表首项（保留用于向后兼容） |
 | `DEFAULT_POOL_FEE` | `2500` | 0.25% 手续费档位 |
 | `DEFAULT_SLIPPAGE_BPS` | `300` | 3% 默认滑点 |
 | `DEADLINE_SECONDS` | `1200` | 交易 deadline 20 分钟 |
@@ -276,7 +287,7 @@ SDK 通过 `index.ts` 统一导出：
 
 - **类**：`AtxClient`, `WalletManager`, `QueryService`, `SwapService`, `LiquidityService`, `TransferService`
 - **类型**：`ContractAddresses`, `AtxClientConfig`, `SecretStore`, `WalletCreateOptions`, `UnlockedWallet`, `KeystoreInfo`, `PriceResult`, `BalanceResult`, `QuoteResult`, `PositionData`, `TokenInfo`, `SwapResult`, `LiquidityAddOptions`, `TxResult`
-- **常量**：`BSC_CHAIN_ID`, `DEFAULT_RPC_URL`, `DEFAULT_CONTRACTS`, `DEFAULT_POOL_FEE`, `DEFAULT_SLIPPAGE_BPS`, `MAX_UINT128`, `DEADLINE_SECONDS`
+- **常量**：`BSC_CHAIN_ID`, `DEFAULT_RPC_URLS`, `DEFAULT_RPC_URL`, `DEFAULT_CONTRACTS`, `DEFAULT_POOL_FEE`, `DEFAULT_SLIPPAGE_BPS`, `MAX_UINT128`, `DEADLINE_SECONDS`
 - **ABI**：`erc20Abi`, `swapRouterAbi`, `quoterAbi`, `poolAbi`, `npmAbi`
 - **viem 工具**（re-export）：`parseEther`, `parseUnits`, `formatEther`, `formatUnits`
 

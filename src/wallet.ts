@@ -1,5 +1,6 @@
 import {
   createWalletClient,
+  fallback,
   http,
   type Address,
   type Chain,
@@ -28,13 +29,13 @@ interface KeystoreV3 {
 export class WalletManager {
   private readonly keystorePath: string;
   private readonly chain: Chain;
-  private readonly rpcUrl: string;
+  private readonly rpcUrls: string[];
   private secretStore: SecretStore | null;
 
-  constructor(keystorePath: string, chain: Chain, rpcUrl: string, secretStore?: SecretStore) {
+  constructor(keystorePath: string, chain: Chain, rpcUrls: string[], secretStore?: SecretStore) {
     this.keystorePath = keystorePath;
     this.chain = chain;
-    this.rpcUrl = rpcUrl;
+    this.rpcUrls = rpcUrls;
     this.secretStore = secretStore ?? null;
   }
 
@@ -114,7 +115,7 @@ export class WalletManager {
     const walletClient = createWalletClient({
       account,
       chain: this.chain,
-      transport: http(this.rpcUrl),
+      transport: fallback(this.rpcUrls.map((url) => http(url))),
     });
 
     if (password && this.secretStore) {

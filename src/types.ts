@@ -11,6 +11,7 @@ export interface ContractAddresses {
 
 export interface AtxClientConfig {
   rpcUrl?: string;
+  rpcUrls?: string[];
   keystorePath?: string;
   contracts?: Partial<ContractAddresses>;
   poolFee?: number;

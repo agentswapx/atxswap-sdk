@@ -24,6 +24,8 @@ const client = new AtxClient({ rpcUrl: process.env.BSC_RPC_URL });
 const price = await client.query.getPrice();
 ```
 
+> The SDK ships with a built-in fallback list of 8 BSC RPC endpoints (Infura + 7 BNB Chain public nodes), so you can construct `new AtxClient()` with no config and it will still work. See [`AtxClient`](#atxclient--entry-point) for `rpcUrls` usage.
+
 Need it locally for development?
 
 ```bash
@@ -64,7 +66,13 @@ src/
 
 ```typescript
 const client = new AtxClient({
-  rpcUrl: "https://bsc-rpc.publicnode.com",  // optional, has default
+  // Option A: pass an ordered list, viem will fall back in order
+  rpcUrls: [
+    "https://my-private-rpc.example.com",
+    "https://bsc-mainnet.infura.io",
+  ],
+  // Option B (legacy, single endpoint): rpcUrl: "https://..."
+  // If neither is set, the built-in DEFAULT_RPC_URLS list is used.
   keystorePath: "./keystore",                 // optional, default ./keystore
   poolFee: 2500,                              // optional, default 2500 (0.25%)
   contracts: {                                // optional, partial override
@@ -74,6 +82,8 @@ const client = new AtxClient({
 });
 await client.ready(); // Wait for SecretStore initialization
 ```
+
+`rpcUrls` takes priority over `rpcUrl`. The `publicClient` (reads) and the `walletClient` returned from `wallet.load()` (writes) share the same viem `fallback` transport built from the resolved URL list.
 
 Access modules via `client.wallet` / `client.query` / `client.swap` / `client.liquidity` / `client.transfer`.
 
@@ -198,7 +208,8 @@ interface TxResult { txHash: `0x${string}`; }
 
 | Constant | Value | Description |
 |---|---|---|
-| `DEFAULT_RPC_URL` | `https://bsc-rpc.publicnode.com` | Public BSC RPC |
+| `DEFAULT_RPC_URLS` | `[infura, bsc-dataseed*.bnbchain.org x 6, binance.nodereal.io]` | Built-in BSC RPC fallback list (8 endpoints) |
+| `DEFAULT_RPC_URL` | `DEFAULT_RPC_URLS[0]` | First entry of the fallback list (kept for backward compatibility) |
 | `DEFAULT_POOL_FEE` | `2500` | 0.25% fee tier |
 | `DEFAULT_SLIPPAGE_BPS` | `300` | 3% default slippage |
 | `DEADLINE_SECONDS` | `1200` | Transaction deadline 20 minutes |
@@ -276,7 +287,7 @@ The SDK exports via `index.ts`:
 
 - **Classes**: `AtxClient`, `WalletManager`, `QueryService`, `SwapService`, `LiquidityService`, `TransferService`
 - **Types**: `ContractAddresses`, `AtxClientConfig`, `SecretStore`, `WalletCreateOptions`, `UnlockedWallet`, `KeystoreInfo`, `PriceResult`, `BalanceResult`, `QuoteResult`, `PositionData`, `TokenInfo`, `SwapResult`, `LiquidityAddOptions`, `TxResult`
-- **Constants**: `BSC_CHAIN_ID`, `DEFAULT_RPC_URL`, `DEFAULT_CONTRACTS`, `DEFAULT_POOL_FEE`, `DEFAULT_SLIPPAGE_BPS`, `MAX_UINT128`, `DEADLINE_SECONDS`
+- **Constants**: `BSC_CHAIN_ID`, `DEFAULT_RPC_URLS`, `DEFAULT_RPC_URL`, `DEFAULT_CONTRACTS`, `DEFAULT_POOL_FEE`, `DEFAULT_SLIPPAGE_BPS`, `MAX_UINT128`, `DEADLINE_SECONDS`
 - **ABI**: `erc20Abi`, `swapRouterAbi`, `quoterAbi`, `poolAbi`, `npmAbi`
 - **viem re-exports**: `parseEther`, `parseUnits`, `formatEther`, `formatUnits`
 
