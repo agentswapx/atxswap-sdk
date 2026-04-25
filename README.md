@@ -4,6 +4,8 @@ TypeScript SDK for ATX token on-chain interactions on BSC, including wallet mana
 
 [**中文文档**](./README.zh.md)
 
+For project background and a short [team introduction](https://docs.atxswap.com/guide/team) ([中文](https://docs.atxswap.com/zh/guide/team)), see the ATXSwap documentation site. This README focuses on the SDK API.
+
 ## Tech Stack
 
 - **TypeScript** — strict mode
