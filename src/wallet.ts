@@ -4,6 +4,7 @@ import {
   http,
   type Address,
   type Chain,
+  keccak256,
 } from "viem";
 import { privateKeyToAccount, generatePrivateKey } from "viem/accounts";
 import { readFileSync, writeFileSync, readdirSync, mkdirSync, existsSync } from "node:fs";
@@ -146,6 +147,28 @@ export class WalletManager {
     return { keystore, keystoreFile: filepath };
   }
 
+  async exportMetaMaskKeystore(
+    address: Address,
+    password?: string,
+  ): Promise<{ keystore: KeystoreFile; keystoreFile: string }> {
+    const { keystore: raw, keystoreFile } = this.exportKeystore(address);
+    let pwd = password;
+    if (!pwd && this.secretStore) {
+      pwd = (await this.secretStore.get(address)) ?? undefined;
+    }
+    if (!pwd) {
+      throw new Error(
+        "Password required: provide a password or save one first via savePassword()",
+      );
+    }
+
+    const privateKey = decryptKeystore(raw, pwd);
+    return {
+      keystore: encryptKeystore(privateKey, pwd, raw.name),
+      keystoreFile,
+    };
+  }
+
   async savePassword(address: Address, password: string): Promise<void> {
     if (!this.secretStore) {
       throw new Error("No SecretStore configured");
@@ -179,9 +202,7 @@ function encryptKeystore(privateKey: `0x${string}`, password: string, name?: str
   const cipher = createCipheriv("aes-128-ctr", derivedKey.subarray(0, 16), iv);
   const ciphertext = Buffer.concat([cipher.update(keyBytes), cipher.final()]);
 
-  const mac = createHash("sha256")
-    .update(Buffer.concat([derivedKey.subarray(16, 32), ciphertext]))
-    .digest("hex");
+  const mac = keystoreMac(derivedKey, ciphertext);
 
   const account = privateKeyToAccount(privateKey);
 
@@ -211,11 +232,10 @@ function decryptKeystore(keystore: KeystoreV3, password: string): `0x${string}` 
 
   const ciphertext = Buffer.from(c.ciphertext, "hex");
 
-  const mac = createHash("sha256")
-    .update(Buffer.concat([derivedKey.subarray(16, 32), ciphertext]))
-    .digest("hex");
+  const mac = keystoreMac(derivedKey, ciphertext);
+  const legacyMac = legacySha256Mac(derivedKey, ciphertext);
 
-  if (mac !== c.mac) {
+  if (mac !== c.mac && legacyMac !== c.mac) {
     throw new Error("Invalid password: MAC mismatch");
   }
 
@@ -224,4 +244,14 @@ function decryptKeystore(keystore: KeystoreV3, password: string): `0x${string}` 
   const privateKey = Buffer.concat([decipher.update(ciphertext), decipher.final()]);
 
   return `0x${privateKey.toString("hex")}`;
+}
+
+function keystoreMac(derivedKey: Buffer, ciphertext: Buffer): string {
+  return keccak256(Buffer.concat([derivedKey.subarray(16, 32), ciphertext])).slice(2);
+}
+
+function legacySha256Mac(derivedKey: Buffer, ciphertext: Buffer): string {
+  return createHash("sha256")
+    .update(Buffer.concat([derivedKey.subarray(16, 32), ciphertext]))
+    .digest("hex");
 }

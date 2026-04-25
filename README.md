@@ -103,7 +103,7 @@ Private keys are stored in keystore V3 format with encryption parameters:
 
 - KDF: scrypt (N=8192, r=8, p=1)
 - Cipher: aes-128-ctr
-- MAC: sha256
+- MAC: keccak256 (Ethereum/Web3 Secret Storage V3 compatible)
 
 Each wallet is stored as `{address}.json` in the `keystorePath` directory. `load()` returns an `UnlockedWallet` object containing `walletClient` and `account`, which can be passed directly to other modules' write methods.
 
@@ -152,6 +152,7 @@ These defaults are fixed and cannot be overridden via environment variables.
 - `load(address)` without password auto-reads from SecretStore
 - `load(address, password)` with password uses it directly and syncs to storage
 - `exportKeystore(address)` returns the on-disk keystore V3 JSON (already password-encrypted); the SDK never exposes the unencrypted private key
+- `exportMetaMaskKeystore(address, password?)` re-encrypts a local keystore as a MetaMask-compatible encrypted keystore JSON. It uses the saved SecretStore password when available; otherwise pass `password`.
 
 #### Additional Methods
 

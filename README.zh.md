@@ -103,7 +103,7 @@ await client.ready(); // 等待 SecretStore 初始化完成
 
 - KDF: scrypt (N=8192, r=8, p=1)
 - Cipher: aes-128-ctr
-- MAC: sha256
+- MAC: keccak256（兼容 Ethereum/Web3 Secret Storage V3 与 MetaMask）
 
 每个钱包以 `{address}.json` 存储在 `keystorePath` 目录。`load()` 返回 `UnlockedWallet` 对象，包含 `walletClient` 和 `account`，可直接传给其他模块的写方法。
 
@@ -151,6 +151,7 @@ Linux 上只有当 `secret-tool` 在 `PATH` 上**且** `DBUS_SESSION_BUS_ADDRESS
 - `load(address)` 不传密码时自动从 SecretStore 读取
 - `load(address, password)` 传了密码时使用该密码并同步保存
 - `exportKeystore(address)` 返回该地址磁盘上的 keystore V3 JSON（仍是加密形式）；SDK 不会直接吐出明文私钥
+- `exportMetaMaskKeystore(address, password?)` 会把本地 keystore 重新加密为 MetaMask 兼容的 keystore JSON；若 SecretStore 已保存密码会自动读取，否则需要显式传入 `password`
 
 #### 新增方法
 

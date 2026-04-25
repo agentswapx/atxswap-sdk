@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.0.7
+
+- Fixed MetaMask / Web3 Secret Storage V3 compatibility for generated
+  keystores. New keystores now compute `crypto.mac` with Ethereum-compatible
+  `keccak256(derivedKey[16:32] + ciphertext)` instead of `sha256`.
+- Kept SDK read compatibility for legacy `sha256`-MAC keystores created by
+  earlier SDK versions.
+- Added `WalletManager.exportMetaMaskKeystore(address, password?)`, which
+  decrypts an existing SDK keystore locally and re-encrypts it as a
+  MetaMask-compatible encrypted keystore JSON without exposing the raw private
+  key. It uses the saved SecretStore password when available, otherwise the
+  caller must provide a password.
+
 ## 0.0.6
 
 - **Fix (headless / cron)**: `detectStoreType()` no longer locks into the
