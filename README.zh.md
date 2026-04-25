@@ -231,7 +231,7 @@ interface TxResult { txHash: `0x${string}`; }
 | `DEFAULT_RPC_URLS` | `[bsc-rpc.publicnode.com, bsc-dataseed*.bnbchain.org x 6, binance.nodereal.io]` | 内置的 BSC RPC fallback 列表（共 8 个） |
 | `DEFAULT_RPC_URL` | `DEFAULT_RPC_URLS[0]` | fallback 列表首项（保留用于向后兼容） |
 | `DEFAULT_POOL_FEE` | `2500` | 0.25% 手续费档位 |
-| `DEFAULT_SLIPPAGE_BPS` | `300` | 3% 默认滑点 |
+| `DEFAULT_SLIPPAGE_BPS` | `100` | 1% 默认滑点 |
 | `DEADLINE_SECONDS` | `1200` | 交易 deadline 20 分钟 |
 | `MAX_UINT128` | `2^128 - 1` | collect 时用于取回全部手续费 |
 

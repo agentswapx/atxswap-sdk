@@ -232,7 +232,7 @@ interface TxResult { txHash: `0x${string}`; }
 | `DEFAULT_RPC_URLS` | `[bsc-rpc.publicnode.com, bsc-dataseed*.bnbchain.org x 6, binance.nodereal.io]` | Built-in BSC RPC fallback list (8 endpoints) |
 | `DEFAULT_RPC_URL` | `DEFAULT_RPC_URLS[0]` | First entry of the fallback list (kept for backward compatibility) |
 | `DEFAULT_POOL_FEE` | `2500` | 0.25% fee tier |
-| `DEFAULT_SLIPPAGE_BPS` | `300` | 3% default slippage |
+| `DEFAULT_SLIPPAGE_BPS` | `100` | 1% default slippage |
 | `DEADLINE_SECONDS` | `1200` | Transaction deadline 20 minutes |
 | `MAX_UINT128` | `2^128 - 1` | Used in collect to claim all fees |
 

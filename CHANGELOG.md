@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.0.10
+
+- **Behavior**: `DEFAULT_SLIPPAGE_BPS` is now `100` (1%) instead of `300` (3%) for swap and liquidity paths when `slippageBps` is omitted.
+
 ## 0.0.9
 
 - README / README.zh: link to the ATXSwap documentation [team introduction](https://docs.atxswap.com/guide/team) pages; keep SDK docs focused on the API.
