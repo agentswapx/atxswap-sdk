@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.0.8
+
+- Maintenance release; version bump for npm publish.
+
 ## 0.0.7
 
 - Fixed MetaMask / Web3 Secret Storage V3 compatibility for generated
