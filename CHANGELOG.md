@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.0.9
+
+- README / README.zh: link to the ATXSwap documentation [team introduction](https://docs.atxswap.com/guide/team) pages; keep SDK docs focused on the API.
+
 ## 0.0.8
 
 - Maintenance release; version bump for npm publish.
