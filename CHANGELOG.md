@@ -37,8 +37,8 @@
 
 - Updated `DEFAULT_CONTRACTS` to point at the production ATX token and ATX/USDT
   pool addresses on BSC mainnet:
-  - `atx`: `0x82dbfD98AE6741C8506640CE235c6d95570EA638`
-  - `pool`: `0x157003c4a71697a79f300419eaee271a5f21acaa`
+  - `atx`: `0x31bD373bDde9e65Ff681d2970b4b01B8b2C750e0`
+  - `pool`: `0xC3Bd1991332308da3c3571c334941f3398FD91B6`
   Consumers that relied on the old defaults should override them via
   `AtxClient` config or upgrade to pick up the new defaults.
 - Version `0.0.4` was intentionally skipped to keep parity with the
