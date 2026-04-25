@@ -46,7 +46,12 @@ export class WalletManager {
     password: string,
     name?: string,
     options?: WalletCreateOptions,
-  ): Promise<{ address: Address; keystoreFile: string }> {
+  ): Promise<{
+    address: Address;
+    keystoreFile: string;
+    passwordSaved: boolean;
+    passwordSaveError?: string;
+  }> {
     this.ensureDir();
     const privateKey = generatePrivateKey();
     const account = privateKeyToAccount(privateKey);
@@ -56,11 +61,25 @@ export class WalletManager {
     writeFileSync(filepath, JSON.stringify(keystore, null, 2));
 
     const shouldSave = options?.savePassword ?? true;
+    let passwordSaved = false;
+    let passwordSaveError: string | undefined;
     if (shouldSave && this.secretStore) {
-      await this.secretStore.set(account.address, password);
+      try {
+        await this.secretStore.set(account.address, password);
+        passwordSaved = true;
+      } catch (err) {
+        // Best-effort: the keystore is already written, so do not abort
+        // wallet creation just because the secret backend is unavailable.
+        passwordSaveError = err instanceof Error ? err.message : String(err);
+      }
     }
 
-    return { address: account.address, keystoreFile: filepath };
+    return {
+      address: account.address,
+      keystoreFile: filepath,
+      passwordSaved,
+      ...(passwordSaveError ? { passwordSaveError } : {}),
+    };
   }
 
   list(): KeystoreInfo[] {
@@ -103,7 +122,11 @@ export class WalletManager {
     });
 
     if (password && this.secretStore) {
-      await this.secretStore.set(address, password);
+      // Best-effort: caller already proved they hold the password, so a
+      // failed memorization should not abort the load.
+      try {
+        await this.secretStore.set(address, password);
+      } catch { /* ignore — wallet is already unlocked */ }
     }
 
     return { address: account.address, walletClient, account, chain: this.chain };

@@ -30,9 +30,35 @@ function isCommandAvailable(cmd: string): boolean {
   }
 }
 
+const VALID_OVERRIDES: ReadonlySet<SecretStoreType> = new Set([
+  "keychain",
+  "secret-service",
+  "file",
+  "none",
+]);
+
+function readOverride(): SecretStoreType | null {
+  const raw = process.env.ATXSWAP_SECRET_STORE?.trim().toLowerCase();
+  if (!raw) return null;
+  return VALID_OVERRIDES.has(raw as SecretStoreType)
+    ? (raw as SecretStoreType)
+    : null;
+}
+
+function hasUsableSecretService(): boolean {
+  if (!isCommandAvailable("secret-tool")) return false;
+  // `secret-tool` will hang or error in headless environments (cron, SSH
+  // without forwarded D-Bus, sandboxed CI) because there is no session bus
+  // and no keyring daemon. Require an explicit DBUS session before claiming
+  // the backend is usable.
+  return Boolean(process.env.DBUS_SESSION_BUS_ADDRESS);
+}
+
 export function detectStoreType(): SecretStoreType {
+  const override = readOverride();
+  if (override) return override;
   if (platform() === "darwin" && isCommandAvailable("security")) return "keychain";
-  if (platform() === "linux" && isCommandAvailable("secret-tool")) return "secret-service";
+  if (platform() === "linux" && hasUsableSecretService()) return "secret-service";
   return "file";
 }
 

@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.0.6
+
+- **Fix (headless / cron)**: `detectStoreType()` no longer locks into the
+  `secret-service` backend just because the `secret-tool` binary is on
+  `PATH`. On Linux the SDK now also requires `DBUS_SESSION_BUS_ADDRESS` to
+  be set; otherwise it falls back to the encrypted file store. This stops
+  `secret-tool store` from blowing up under cron, sandboxed CI and SSH
+  sessions without a forwarded D-Bus.
+- Added `ATXSWAP_SECRET_STORE` environment variable to force a backend
+  (`keychain` | `secret-service` | `file` | `none`). The new `none` backend
+  is a no-op store for callers that always pass `--password` explicitly and
+  do not want any password persistence.
+- `WalletManager.create()` now treats password persistence as best-effort:
+  if the secret backend rejects the write, the keystore is still written to
+  disk and the call returns `{ passwordSaved: false, passwordSaveError }`
+  instead of throwing. `WalletManager.load(address, password)` likewise
+  swallows save errors because the wallet is already unlocked.
+- Re-exported `NoopSecretStore` and `FileSecretStore` from the package
+  entry for advanced consumers that want to construct a backend explicitly.
+
 ## 0.0.5
 
 - Updated `DEFAULT_CONTRACTS` to point at the production ATX token and ATX/USDT

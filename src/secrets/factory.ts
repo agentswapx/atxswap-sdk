@@ -13,6 +13,10 @@ export async function createSecretStore(): Promise<SecretStore> {
       const { SecretServiceStore } = await import("./secretService.js");
       return new SecretServiceStore();
     }
+    case "none": {
+      const { NoopSecretStore } = await import("./none.js");
+      return new NoopSecretStore();
+    }
     case "file":
     default: {
       const { FileSecretStore } = await import("./file.js");

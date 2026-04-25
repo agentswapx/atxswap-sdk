@@ -116,8 +116,26 @@ The SDK includes a built-in cross-platform secure password storage layer — **e
 | Platform | Storage Backend | Implementation |
 |---|---|---|
 | macOS Desktop | Keychain | `security` CLI |
-| Linux Desktop | Secret Service / GNOME Keyring | `secret-tool` CLI |
-| Other environments (incl. servers) | Master key file | `aes-256-gcm` encrypted local files |
+| Linux Desktop (with `DBUS_SESSION_BUS_ADDRESS`) | Secret Service / GNOME Keyring | `secret-tool` CLI |
+| Other environments (incl. servers, cron, headless CI) | Master key file | `aes-256-gcm` encrypted local files |
+
+On Linux the SDK only picks `secret-service` when **both** the `secret-tool`
+binary is on `PATH` **and** `DBUS_SESSION_BUS_ADDRESS` is set, so cron / SSH /
+sandboxed environments fall through to the file backend automatically.
+
+You can also force a backend via `ATXSWAP_SECRET_STORE`:
+
+| Value | Effect |
+|---|---|
+| `keychain` | macOS Keychain (requires `security` CLI) |
+| `secret-service` | libsecret / GNOME Keyring (requires running daemon) |
+| `file` | `aes-256-gcm` master-key file backend |
+| `none` | No-op store; password is never persisted, caller must pass it on every load |
+
+If the secret backend fails at write time, `WalletManager.create()` still
+writes the keystore to disk and returns `{ passwordSaved: false, passwordSaveError }`.
+`WalletManager.load(address, password)` swallows save errors silently because
+the wallet is already unlocked.
 
 #### Default Paths
 

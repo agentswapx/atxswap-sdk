@@ -26,12 +26,25 @@ export class SecretServiceStore implements SecretStore {
 
   async set(address: string, secret: string): Promise<void> {
     const account = normalizeAddress(address);
-    execFileSync("secret-tool", [
-      "store",
-      "--label", `${this.service}:${account}`,
-      "service", this.service,
-      "account", account,
-    ], { input: secret, stdio: ["pipe", "pipe", "pipe"] });
+    try {
+      execFileSync("secret-tool", [
+        "store",
+        "--label", `${this.service}:${account}`,
+        "service", this.service,
+        "account", account,
+      ], { input: secret, stdio: ["pipe", "pipe", "pipe"] });
+    } catch (err) {
+      // In headless environments (cron, sandboxed CI, SSH without DBUS) the
+      // `secret-tool` binary may exist but the libsecret daemon is not
+      // reachable. Surface a typed error so callers can choose to ignore
+      // failed memorization without dropping the primary operation.
+      const cause = err instanceof Error ? err.message : String(err);
+      throw new Error(
+        `secret-service unavailable (set): ${cause}. ` +
+          "Set ATXSWAP_SECRET_STORE=file to use the file backend, or " +
+          "ATXSWAP_SECRET_STORE=none to disable password persistence.",
+      );
+    }
   }
 
   async delete(address: string): Promise<void> {
@@ -42,7 +55,7 @@ export class SecretServiceStore implements SecretStore {
         "service", this.service,
         "account", account,
       ], { stdio: "pipe" });
-    } catch { /* ignore if not exists */ }
+    } catch { /* ignore if not exists or backend unavailable */ }
   }
 
   async has(address: string): Promise<boolean> {
