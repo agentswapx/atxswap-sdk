@@ -100,6 +100,57 @@ export interface LiquidityAddOptions {
   slippageBps?: number;
 }
 
+export type LiquidityQuoteBaseToken = "atx" | "usdt";
+
+export type LiquidityQuoteRange =
+  | { fullRange: true }
+  | { tickLower: number; tickUpper: number }
+  | { minPrice: number; maxPrice: number }
+  | { rangePercent: number };
+
+export interface QuoteAddLiquidityOptions {
+  baseToken: LiquidityQuoteBaseToken;
+  amount: bigint;
+  range?: LiquidityQuoteRange;
+  slippageBps?: number;
+}
+
+export interface QuoteAddLiquidityResult {
+  baseToken: LiquidityQuoteBaseToken;
+  amount: bigint;
+  currentPrice: {
+    usdtPerAtx: number;
+    atxPerUsdt: number;
+    sqrtPriceX96: bigint;
+  };
+  pool: {
+    isAtxToken0: boolean;
+    currentTick: number;
+    tickSpacing: number;
+  };
+  range: {
+    mode: "fullRange" | "tick" | "price" | "percent";
+    tickLower: number;
+    tickUpper: number;
+    minPrice?: number;
+    maxPrice?: number;
+    centerPrice?: number;
+    rangePercent?: number;
+  };
+  needs: {
+    atx: boolean;
+    usdt: boolean;
+  };
+  desiredAmounts: {
+    atx: bigint;
+    usdt: bigint;
+  };
+  minAmounts: {
+    atx: bigint;
+    usdt: bigint;
+  };
+}
+
 export interface TxResult {
   txHash: `0x${string}`;
 }
