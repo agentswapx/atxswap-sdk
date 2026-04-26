@@ -26,7 +26,7 @@ const client = new AtxClient({ rpcUrl: process.env.BSC_RPC_URL });
 const price = await client.query.getPrice();
 ```
 
-> The SDK ships with a built-in fallback list of 8 BSC public RPC endpoints, so you can construct `new AtxClient()` with no config and it will still work. See [`AtxClient`](#atxclient--entry-point) for `rpcUrls` usage.
+> The SDK ships with a built-in fallback list of 6 BSC public RPC endpoints, so you can construct `new AtxClient()` with no config and it will still work. See [`AtxClient`](#atxclient--entry-point) for `rpcUrls` usage.
 
 Need it locally for development?
 
@@ -71,7 +71,7 @@ const client = new AtxClient({
   // Option A: pass an ordered list, viem will fall back in order
   rpcUrls: [
     "https://my-private-rpc.example.com",
-    "https://bsc-rpc.publicnode.com",
+    "https://bsc-dataseed.bnbchain.org",
   ],
   // Option B (legacy, single endpoint): rpcUrl: "https://..."
   // If neither is set, the built-in DEFAULT_RPC_URLS list is used.
@@ -229,7 +229,7 @@ interface TxResult { txHash: `0x${string}`; }
 
 | Constant | Value | Description |
 |---|---|---|
-| `DEFAULT_RPC_URLS` | `[bsc-rpc.publicnode.com, bsc-dataseed*.bnbchain.org x 6, binance.nodereal.io]` | Built-in BSC RPC fallback list (8 endpoints) |
+| `DEFAULT_RPC_URLS` | `[bsc-dataseed.bnbchain.org, bsc-dataseed1..4.bnbchain.org, binance.nodereal.io]` | Built-in BSC RPC fallback list (6 endpoints) |
 | `DEFAULT_RPC_URL` | `DEFAULT_RPC_URLS[0]` | First entry of the fallback list (kept for backward compatibility) |
 | `DEFAULT_POOL_FEE` | `2500` | 0.25% fee tier |
 | `DEFAULT_SLIPPAGE_BPS` | `100` | 1% default slippage |

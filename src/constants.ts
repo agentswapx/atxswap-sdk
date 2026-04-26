@@ -3,13 +3,11 @@ import type { Address } from "viem";
 export const BSC_CHAIN_ID = 56;
 
 export const DEFAULT_RPC_URLS: readonly string[] = [
-  "https://bsc-rpc.publicnode.com",
   "https://bsc-dataseed.bnbchain.org",
   "https://bsc-dataseed1.bnbchain.org",
   "https://bsc-dataseed2.bnbchain.org",
   "https://bsc-dataseed3.bnbchain.org",
   "https://bsc-dataseed4.bnbchain.org",
-  "https://bsc-dataseed-public.bnbchain.org",
   "https://binance.nodereal.io",
 ];
 
