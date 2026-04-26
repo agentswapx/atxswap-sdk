@@ -1,6 +1,6 @@
 {
   "name": "atxswap-sdk",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "description": "TypeScript SDK for ATX token on-chain interactions (BSC / PancakeSwap V3) — wallet management, price/balance queries, swaps, concentrated liquidity, and transfers.",
   "type": "module",
   "main": "./dist/index.cjs",
