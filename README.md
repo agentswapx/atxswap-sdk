@@ -252,6 +252,56 @@ const bal = await client.query.getBalance("0x...");
 console.log(`BNB: ${bal.bnb}, ATX: ${bal.atx}, USDT: ${bal.usdt}`);
 ```
 
+### Query LP Position and Collectable Fees
+
+```typescript
+import { AtxClient } from "atxswap-sdk";
+
+const client = new AtxClient();
+
+const positions = await client.query.getPositions("0xOwner", {
+  includeCollectableFees: true,
+});
+
+for (const position of positions) {
+  const collectable0 = position.collectable0 ?? position.tokensOwed0;
+  const collectable1 = position.collectable1 ?? position.tokensOwed1;
+  console.log({
+    tokenId: position.tokenId.toString(),
+    tickLower: position.tickLower,
+    tickUpper: position.tickUpper,
+    collectable0: collectable0.toString(),
+    collectable1: collectable1.toString(),
+  });
+}
+```
+
+`tokensOwed0/1` comes directly from `positions()`. For fee harvest previews, prefer
+`collectable0/1` returned when `includeCollectableFees: true` is enabled, because a
+position can have claimable fees even while the raw `tokensOwed` fields remain `0`.
+
+### Preview Fee Harvest
+
+```typescript
+import { AtxClient } from "atxswap-sdk";
+
+const client = new AtxClient();
+
+const preview = await client.query.previewCollectFees(
+  "0xOwner",
+  6770485n,
+);
+
+console.log({
+  tokenId: preview.tokenId.toString(),
+  amount0: preview.amount0.toString(),
+  amount1: preview.amount1.toString(),
+});
+```
+
+Use `previewCollectFees()` before `client.liquidity.collectFees(...)` when you need a
+single-position harvest preview without fetching every position first.
+
 ### Create Wallet and Swap
 
 ```typescript
@@ -308,6 +358,7 @@ The SDK exports via `index.ts`:
 
 - **Classes**: `AtxClient`, `WalletManager`, `QueryService`, `SwapService`, `LiquidityService`, `TransferService`
 - **Types**: `ContractAddresses`, `AtxClientConfig`, `SecretStore`, `WalletCreateOptions`, `UnlockedWallet`, `KeystoreInfo`, `KeystoreFile`, `PriceResult`, `BalanceResult`, `QuoteResult`, `PositionData`, `TokenInfo`, `SwapResult`, `LiquidityAddOptions`, `TxResult`
+- **Query helpers**: `GetPositionsOptions`, `CollectFeesQuote`
 - **Constants**: `BSC_CHAIN_ID`, `DEFAULT_RPC_URLS`, `DEFAULT_RPC_URL`, `DEFAULT_CONTRACTS`, `DEFAULT_POOL_FEE`, `DEFAULT_SLIPPAGE_BPS`, `MAX_UINT128`, `DEADLINE_SECONDS`
 - **ABI**: `erc20Abi`, `swapRouterAbi`, `quoterAbi`, `poolAbi`, `npmAbi`
 - **viem re-exports**: `parseEther`, `parseUnits`, `formatEther`, `formatUnits`

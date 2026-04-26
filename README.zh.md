@@ -251,6 +251,56 @@ const bal = await client.query.getBalance("0x...");
 console.log(`BNB: ${bal.bnb}, ATX: ${bal.atx}, USDT: ${bal.usdt}`);
 ```
 
+### 查询 LP 仓位与可收手续费
+
+```typescript
+import { AtxClient } from "atxswap-sdk";
+
+const client = new AtxClient();
+
+const positions = await client.query.getPositions("0xOwner", {
+  includeCollectableFees: true,
+});
+
+for (const position of positions) {
+  const collectable0 = position.collectable0 ?? position.tokensOwed0;
+  const collectable1 = position.collectable1 ?? position.tokensOwed1;
+  console.log({
+    tokenId: position.tokenId.toString(),
+    tickLower: position.tickLower,
+    tickUpper: position.tickUpper,
+    collectable0: collectable0.toString(),
+    collectable1: collectable1.toString(),
+  });
+}
+```
+
+`tokensOwed0/1` 是 `positions()` 原始返回值。做手续费收割预览时，应优先看
+`includeCollectableFees: true` 返回的 `collectable0/1`，因为很多仓位在
+`tokensOwed` 仍为 `0` 时，实际上已经可以通过 `collect()` 收取手续费。
+
+### 预览手续费收割
+
+```typescript
+import { AtxClient } from "atxswap-sdk";
+
+const client = new AtxClient();
+
+const preview = await client.query.previewCollectFees(
+  "0xOwner",
+  6770485n,
+);
+
+console.log({
+  tokenId: preview.tokenId.toString(),
+  amount0: preview.amount0.toString(),
+  amount1: preview.amount1.toString(),
+});
+```
+
+如果你只想预览某一个仓位是否值得收割，不想先拉全量仓位列表，可以直接用
+`previewCollectFees()`，再决定是否调用 `client.liquidity.collectFees(...)`。
+
 ### 创建钱包并交换
 
 ```typescript
@@ -307,6 +357,7 @@ SDK 通过 `index.ts` 统一导出：
 
 - **类**：`AtxClient`, `WalletManager`, `QueryService`, `SwapService`, `LiquidityService`, `TransferService`
 - **类型**：`ContractAddresses`, `AtxClientConfig`, `SecretStore`, `WalletCreateOptions`, `UnlockedWallet`, `KeystoreInfo`, `KeystoreFile`, `PriceResult`, `BalanceResult`, `QuoteResult`, `PositionData`, `TokenInfo`, `SwapResult`, `LiquidityAddOptions`, `TxResult`
+- **查询辅助类型**：`GetPositionsOptions`, `CollectFeesQuote`
 - **常量**：`BSC_CHAIN_ID`, `DEFAULT_RPC_URLS`, `DEFAULT_RPC_URL`, `DEFAULT_CONTRACTS`, `DEFAULT_POOL_FEE`, `DEFAULT_SLIPPAGE_BPS`, `MAX_UINT128`, `DEADLINE_SECONDS`
 - **ABI**：`erc20Abi`, `swapRouterAbi`, `quoterAbi`, `poolAbi`, `npmAbi`
 - **viem 工具**（re-export）：`parseEther`, `parseUnits`, `formatEther`, `formatUnits`
