@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.0.12
+
+- Version bump for npm publish (no functional change vs 0.0.11).
+
 ## 0.0.11
 
 - **RPC**: `DEFAULT_RPC_URLS` is now 6 endpoints, with `https://bsc-dataseed.bnbchain.org` first, then `bsc-dataseed1..4.bnbchain.org`, then `https://binance.nodereal.io`. Removed `bsc-rpc.publicnode.com` and `https://bsc-dataseed-public.bnbchain.org` (aligned with the frontend fallback list).
