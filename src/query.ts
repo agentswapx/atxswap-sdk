@@ -7,7 +7,10 @@ import type {
   QuoteResult,
   PositionData,
   TokenInfo,
+  GetPositionsOptions,
+  CollectFeesQuote,
 } from "./types.js";
+import { MAX_UINT128 } from "./constants.js";
 
 export class QueryService {
   constructor(
@@ -110,7 +113,31 @@ export class QueryService {
     };
   }
 
-  async getPositions(address: Address): Promise<PositionData[]> {
+  async previewCollectFees(address: Address, tokenId: bigint): Promise<CollectFeesQuote> {
+    const result = await this.client.simulateContract({
+      account: address,
+      address: this.contracts.npm,
+      abi: npmAbi,
+      functionName: "collect",
+      args: [
+        {
+          tokenId,
+          recipient: address,
+          amount0Max: MAX_UINT128,
+          amount1Max: MAX_UINT128,
+        },
+      ],
+    });
+
+    return {
+      tokenId,
+      recipient: address,
+      amount0: result.result[0],
+      amount1: result.result[1],
+    };
+  }
+
+  async getPositions(address: Address, options: GetPositionsOptions = {}): Promise<PositionData[]> {
     const balance = await this.client.readContract({
       address: this.contracts.npm,
       abi: npmAbi,
@@ -143,7 +170,7 @@ export class QueryService {
       ),
     );
 
-    return positions
+    const filteredPositions = positions
       .map((pos, i) => {
         const [, , token0, token1, fee, tickLower, tickUpper, liquidity, , , tokensOwed0, tokensOwed1] = pos;
         // Filter to only our pool's positions
@@ -154,6 +181,7 @@ export class QueryService {
             (token1 as Address).toLowerCase() === this.contracts.usdt.toLowerCase());
 
         if (!isOurPool) return null;
+        if (options.tokenId !== undefined && tokenIds[i] !== options.tokenId) return null;
 
         return {
           tokenId: tokenIds[i],
@@ -168,6 +196,42 @@ export class QueryService {
         } satisfies PositionData;
       })
       .filter((p): p is PositionData => p !== null);
+
+    if (!options.includeCollectableFees || filteredPositions.length === 0) {
+      return filteredPositions;
+    }
+
+    const collectableResults = await Promise.all(
+      filteredPositions.map(async (position) => {
+        try {
+          const quote = await this.previewCollectFees(address, position.tokenId);
+          return {
+            tokenId: position.tokenId,
+            collectable0: quote.amount0,
+            collectable1: quote.amount1,
+          };
+        } catch {
+          return {
+            tokenId: position.tokenId,
+            collectable0: position.tokensOwed0,
+            collectable1: position.tokensOwed1,
+          };
+        }
+      }),
+    );
+
+    const collectableMap = new Map(
+      collectableResults.map((result) => [result.tokenId, result]),
+    );
+
+    return filteredPositions.map((position) => {
+      const collectable = collectableMap.get(position.tokenId);
+      return {
+        ...position,
+        collectable0: collectable?.collectable0 ?? position.tokensOwed0,
+        collectable1: collectable?.collectable1 ?? position.tokensOwed1,
+      };
+    });
   }
 
   async getTokenInfo(tokenAddress: Address): Promise<TokenInfo> {

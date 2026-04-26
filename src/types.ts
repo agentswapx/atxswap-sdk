@@ -77,6 +77,20 @@ export interface PositionData {
   liquidity: bigint;
   tokensOwed0: bigint;
   tokensOwed1: bigint;
+  collectable0?: bigint;
+  collectable1?: bigint;
+}
+
+export interface GetPositionsOptions {
+  tokenId?: bigint;
+  includeCollectableFees?: boolean;
+}
+
+export interface CollectFeesQuote {
+  tokenId: bigint;
+  recipient: Address;
+  amount0: bigint;
+  amount1: bigint;
 }
 
 export interface TokenInfo {
