@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.0.13
+
+- Version bump for npm publish (workspace sync).
+
 ## 0.0.12
 
 - Version bump for npm publish (no functional change vs 0.0.11).
