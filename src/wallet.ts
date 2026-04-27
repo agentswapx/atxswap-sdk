@@ -7,7 +7,7 @@ import {
   keccak256,
 } from "viem";
 import { privateKeyToAccount, generatePrivateKey } from "viem/accounts";
-import { readFileSync, writeFileSync, readdirSync, mkdirSync, existsSync } from "node:fs";
+import { readFileSync, writeFileSync, readdirSync, mkdirSync, existsSync, unlinkSync } from "node:fs";
 import { join } from "node:path";
 import { createCipheriv, createDecipheriv, randomBytes, scryptSync, createHash } from "node:crypto";
 import type {
@@ -184,6 +184,17 @@ export class WalletManager {
   async hasSavedPassword(address: Address): Promise<boolean> {
     if (!this.secretStore) return false;
     return this.secretStore.has(address);
+  }
+
+  async delete(address: Address): Promise<void> {
+    const filename = `${address.toLowerCase()}.json`;
+    const filepath = join(this.keystorePath, filename);
+    if (!existsSync(filepath)) {
+      throw new Error(`Keystore file not found for address ${address}`);
+    }
+
+    unlinkSync(filepath);
+    await this.forgetPassword(address);
   }
 }
 
