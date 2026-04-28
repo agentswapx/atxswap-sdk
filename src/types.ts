@@ -79,6 +79,11 @@ export interface PositionData {
   tokensOwed1: bigint;
   collectable0?: bigint;
   collectable1?: bigint;
+  /** Token0/token1 amounts implied by L at current pool price (in-range principal). */
+  principal0?: bigint;
+  principal1?: bigint;
+  principalAtx?: bigint;
+  principalUsdt?: bigint;
 }
 
 export interface GetPositionsOptions {

@@ -7,6 +7,7 @@ export { TransferService } from "./transfer.js";
 
 export * from "./types.js";
 export * from "./constants.js";
+export { getAmountsForLiquidity, tickToSqrtPriceX96 } from "./v3math.js";
 export * from "./abi/index.js";
 export type { SecretStore, SecretStoreType } from "./secrets/types.js";
 export {

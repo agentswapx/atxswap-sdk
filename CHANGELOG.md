@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.0.15
+
+- **QueryService.getPositions**: attaches `principal0`, `principal1`, `principalAtx`, `principalUsdt` (in-range liquidity token amounts from `getAmountsForLiquidity` + current `sqrtPriceX96`).
+- Exports `getAmountsForLiquidity` and `tickToSqrtPriceX96` from `./v3math.js` for integrators.
+
 ## 0.0.13
 
 - Version bump for npm publish (workspace sync).

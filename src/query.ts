@@ -11,6 +11,7 @@ import type {
   CollectFeesQuote,
 } from "./types.js";
 import { MAX_UINT128 } from "./constants.js";
+import { getAmountsForLiquidity } from "./v3math.js";
 
 export class QueryService {
   constructor(
@@ -197,8 +198,50 @@ export class QueryService {
       })
       .filter((p): p is PositionData => p !== null);
 
-    if (!options.includeCollectableFees || filteredPositions.length === 0) {
-      return filteredPositions;
+    if (filteredPositions.length === 0) {
+      return [];
+    }
+
+    const priceSnapshot = await this.getPrice();
+
+    const withPrincipal = (
+      positions: Array<
+        Pick<
+          PositionData,
+          | "tokenId"
+          | "token0"
+          | "token1"
+          | "fee"
+          | "tickLower"
+          | "tickUpper"
+          | "liquidity"
+          | "tokensOwed0"
+          | "tokensOwed1"
+        > &
+          Partial<Pick<PositionData, "collectable0" | "collectable1">>
+      >,
+    ): PositionData[] => {
+      return positions.map((position) => {
+        const isAtxToken0 =
+          position.token0.toLowerCase() === this.contracts.atx.toLowerCase();
+        const { amount0, amount1 } = getAmountsForLiquidity(
+          priceSnapshot.sqrtPriceX96,
+          position.tickLower,
+          position.tickUpper,
+          position.liquidity,
+        );
+        return {
+          ...(position as PositionData),
+          principal0: amount0,
+          principal1: amount1,
+          principalAtx: isAtxToken0 ? amount0 : amount1,
+          principalUsdt: isAtxToken0 ? amount1 : amount0,
+        };
+      });
+    };
+
+    if (!options.includeCollectableFees) {
+      return withPrincipal(filteredPositions);
     }
 
     const collectableResults = await Promise.all(
@@ -224,7 +267,7 @@ export class QueryService {
       collectableResults.map((result) => [result.tokenId, result]),
     );
 
-    return filteredPositions.map((position) => {
+    const merged = filteredPositions.map((position) => {
       const collectable = collectableMap.get(position.tokenId);
       return {
         ...position,
@@ -232,6 +275,8 @@ export class QueryService {
         collectable1: collectable?.collectable1 ?? position.tokensOwed1,
       };
     });
+
+    return withPrincipal(merged);
   }
 
   async getTokenInfo(tokenAddress: Address): Promise<TokenInfo> {
